@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script>
+function sendMessageToStreamlitClient(type, data) {
+  const outData = Object.assign({
+    isStreamlitMessage: true,
+    type: type,
+  }, data);
+  window.parent.postMessage(outData, "*");
+}
+
+function init() {
+  sendMessageToStreamlitClient("streamlit:componentReady", { apiVersion: 1 });
+}
+
+function setFrameHeight(height) {
+  sendMessageToStreamlitClient("streamlit:setFrameHeight", { height: height });
+}
+
+function sendEvent(eventName) {
+  sendMessageToStreamlitClient("streamlit:setComponentValue", {
+    value: {
+      event: eventName,
+      at: new Date().toISOString()
+    }
+  });
+}
+
+let isAway = false;
+
+function handleLeave() {
+  if (!isAway) {
+    isAway = true;
+    sendEvent("left");
+  }
+}
+
+function handleReturn() {
+  if (isAway) {
+    isAway = false;
+    sendEvent("returned");
+  }
+}
+
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) {
+    handleLeave();
+  } else {
+    handleReturn();
+  }
+});
+
+window.addEventListener("blur", function () {
+  handleLeave();
+});
+
+window.addEventListener("focus", function () {
+  handleReturn();
+});
+
+// Best-effort clipboard / context-menu / shortcut blocking on parent & iframe
+function attachProtections(doc) {
+  if (!doc) return;
+  ["copy", "cut", "paste", "contextmenu"].forEach(function (evt) {
+    doc.addEventListener(evt, function (e) {
+      e.preventDefault();
+    }, true);
+  });
+  doc.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && ["c", "v", "x", "a", "u", "s", "p"].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+    }
+    if (e.key === "F12") {
+      e.preventDefault();
+    }
+  }, true);
+}
+
+window.addEventListener("load", function () {
+  init();
+  setFrameHeight(0);
+  attachProtections(document);
+  try {
+    attachProtections(window.parent.document);
+  } catch (err) {}
+});
+</script>
+</head>
+<body style="margin:0;padding:0;overflow:hidden;"></body>
+</html>
