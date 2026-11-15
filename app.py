@@ -297,7 +297,7 @@ if st.session_state.page == "home":
         first_name = st.text_input("Անուն", autocomplete="off", key="candidate_first_name")
         last_name = st.text_input("Ազգանուն", autocomplete="off", key="candidate_last_name")
         position = st.text_input("Հաստիք", autocomplete="off", key="candidate_position")
-        st.caption("Թեստի ընթացքում կարող են գրանցվել դիտարկվող էջից դուրս գալու դեպքերը։")
+        st.caption("Ուշադրություն․ թեստից դուրս գալու դեպքերը գրանցվում են:")
         start = st.form_submit_button("Սկսել թեստը", use_container_width=True)
     if start:
         if not first_name.strip() or not last_name.strip():
@@ -396,8 +396,7 @@ elif st.session_state.page == "finished":
     show_header()
     st.markdown("<div style='text-align:center; padding-top:35px;'>", unsafe_allow_html=True)
     st.markdown("## Շնորհակալություն թեստը լրացնելու համար։")
-    st.markdown("### Ձեր արդյունքները պաշտպանված են և հասանելի են միայն HR բաժնին։")
-    st.markdown("Թեստը հաջողությամբ ավարտված է։")
+    st.markdown("### Ձեր թեստի տվյալները պաշտպանված էն եւ հասանելի էն միայն HR բաժնին։")
     st.markdown("</div>", unsafe_allow_html=True)
     st.info("Դուք կվերադառնաք գլխավոր էջ։")
     # Browser-side timed redirect back to the app's root.
