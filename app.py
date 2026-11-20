@@ -39,12 +39,22 @@ st.set_page_config(
 
 # ----------------------------- Supabase ----------------------------------
 # Create these tables once by running supabase_schema.sql in Supabase SQL Editor.
+from supabase import create_client
+
 try:
-    SUPABASE_URL = st.secrets.get("SUPABASE_URL", "")
-    SUPABASE_SERVICE_ROLE_KEY = st.secrets.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_SERVICE_ROLE_KEY = st.secrets["SUPABASE_SERVICE_ROLE_KEY"]
 except Exception:
-    SUPABASE_URL = ""
-    SUPABASE_SERVICE_ROLE_KEY = ""
+    st.error("Supabase credentials are missing. Check Streamlit Secrets.")
+    st.stop()
+
+def get_supabase():
+    return create_client(
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY
+    )
+
+supabase = get_supabase()
 
 @st.cache_resource
 def get_supabase():
